@@ -12,7 +12,7 @@ describe("카카오페이 API 설정", () => {
 
     expect(kakaoAppId).toBe("1470706");
     expect(kakaoMerchantId).toBe("kartracerapp-fxgtpp9z.manus.space");
-    expect(kakaoAdminKey).toBe("53174982ec5eb604accfc419dfde3cf0");
+    expect(kakaoAdminKey).toBe("8970e0f91ee963363cb6dd20ec1396d32");
   });
 
   it("카카오페이 API 엔드포인트 확인", () => {

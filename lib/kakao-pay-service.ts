@@ -1,6 +1,6 @@
 /**
- * 카카오페이 결제 서비스
- * 실제 결제 처리를 위한 API 호출
+ * 카카오페이 결제 서비스 (실제 결제)
+ * 카카오페이 API를 통한 실제 결제 처리
  */
 
 const KAKAO_APP_ID = process.env.KAKAO_APP_ID || "1470706";
@@ -54,6 +54,10 @@ export interface ApprovalResponse {
  */
 export const initializePayment = async (request: PaymentRequest): Promise<PaymentResponse> => {
   try {
+    if (!KAKAO_ADMIN_KEY) {
+      throw new Error("카카오페이 Admin 키가 설정되지 않았습니다.");
+    }
+
     const params = new URLSearchParams();
     params.append("cid", KAKAO_MERCHANT_ID);
     params.append("partner_order_id", request.orderId);
@@ -77,7 +81,8 @@ export const initializePayment = async (request: PaymentRequest): Promise<Paymen
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(`카카오페이 결제 준비 실패: ${error.msg}`);
+      console.error("카카오페이 API 오류:", error);
+      throw new Error(`카카오페이 결제 준비 실패: ${error.msg || error.error_description}`);
     }
 
     const data: PaymentResponse = await response.json();
@@ -97,6 +102,10 @@ export const approvePayment = async (
   orderId: string
 ): Promise<ApprovalResponse> => {
   try {
+    if (!KAKAO_ADMIN_KEY) {
+      throw new Error("카카오페이 Admin 키가 설정되지 않았습니다.");
+    }
+
     const params = new URLSearchParams();
     params.append("cid", KAKAO_MERCHANT_ID);
     params.append("tid", tid);
@@ -115,7 +124,8 @@ export const approvePayment = async (
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(`카카오페이 결제 승인 실패: ${error.msg}`);
+      console.error("카카오페이 API 오류:", error);
+      throw new Error(`카카오페이 결제 승인 실패: ${error.msg || error.error_description}`);
     }
 
     const data: ApprovalResponse = await response.json();
@@ -131,6 +141,10 @@ export const approvePayment = async (
  */
 export const cancelPayment = async (tid: string, cancelAmount?: number): Promise<any> => {
   try {
+    if (!KAKAO_ADMIN_KEY) {
+      throw new Error("카카오페이 Admin 키가 설정되지 않았습니다.");
+    }
+
     const params = new URLSearchParams();
     params.append("cid", KAKAO_MERCHANT_ID);
     params.append("tid", tid);
@@ -149,7 +163,8 @@ export const cancelPayment = async (tid: string, cancelAmount?: number): Promise
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(`카카오페이 결제 취소 실패: ${error.msg}`);
+      console.error("카카오페이 API 오류:", error);
+      throw new Error(`카카오페이 결제 취소 실패: ${error.msg || error.error_description}`);
     }
 
     const data = await response.json();
@@ -165,6 +180,10 @@ export const cancelPayment = async (tid: string, cancelAmount?: number): Promise
  */
 export const getPaymentInfo = async (tid: string): Promise<any> => {
   try {
+    if (!KAKAO_ADMIN_KEY) {
+      throw new Error("카카오페이 Admin 키가 설정되지 않았습니다.");
+    }
+
     const params = new URLSearchParams();
     params.append("cid", KAKAO_MERCHANT_ID);
     params.append("tid", tid);
@@ -180,7 +199,8 @@ export const getPaymentInfo = async (tid: string): Promise<any> => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(`카카오페이 결제 정보 조회 실패: ${error.msg}`);
+      console.error("카카오페이 API 오류:", error);
+      throw new Error(`카카오페이 결제 정보 조회 실패: ${error.msg || error.error_description}`);
     }
 
     const data = await response.json();
