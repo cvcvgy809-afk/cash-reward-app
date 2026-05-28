@@ -20,6 +20,7 @@ export default function ProfileScreen() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const isDeveloper = userData?.email === "gymnkk99@gmail.com";
 
   useEffect(() => {
     loadUserData();
@@ -133,6 +134,19 @@ export default function ProfileScreen() {
               </View>
             </View>
           </View>
+
+          {/* Admin Panel */}
+          {isDeveloper && (
+            <View className="gap-3">
+              <Text className="text-foreground font-semibold text-lg">관리자</Text>
+              <TouchableOpacity
+                onPress={() => router.push("/admin-payments")}
+                className="bg-primary rounded-lg p-4 border border-border active:opacity-80"
+              >
+                <Text className="text-foreground font-semibold">결제 승인 관리</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Settings */}
           <View className="gap-3">

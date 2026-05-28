@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScreenContainer } from "@/components/screen-container";
 import { usePayment } from "@/lib/payment-context";
 import { initializePayment } from "@/lib/kakao-pay-service";
+import { addPendingPayment } from "@/lib/payment-service-v2";
 
 export default function PaymentScreen() {
   const [amount, setAmount] = useState("");
@@ -58,28 +59,32 @@ export default function PaymentScreen() {
         failUrl: "exp://payment/fail",
       });
 
+      // 대기중인 결제로 저장
+      await addPendingPayment(
+        user.userId || "user_" + Date.now(),
+        user.name || "사용자",
+        type,
+        paymentAmount,
+        paymentResponse.tid,
+        orderId
+      );
+
       // 결제 상태 업데이트
       setPaymentState({
         tid: paymentResponse.tid,
         orderId,
         amount: paymentAmount,
         itemName,
-        status: "ready",
+        status: "pending",
         error: null,
       });
 
-      // 카카오페이 페이지로 리다이렉트
-      // 모바일에서는 next_redirect_app_url, 웹에서는 next_redirect_pc_url 사용
-      const redirectUrl =
-        paymentResponse.next_redirect_app_url || paymentResponse.next_redirect_pc_url;
+      Alert.alert(
+        "결제 신청 완료",
+        `${itemName} 결제가 신청되었습니다.\n관리자의 승인을 기다리고 있습니다.\n주문번호: ${orderId}`
+      );
 
-      if (redirectUrl) {
-        // 실제 환경에서는 WebView나 브라우저로 열어야 함
-        Alert.alert(
-          "결제 준비 완료",
-          `카카오페이 결제 페이지로 이동합니다.\n주문번호: ${orderId}`
-        );
-      }
+      setAmount("");
     } catch (error: any) {
       const errorMessage = error.message || "결제 준비에 실패했습니다";
       setPaymentError(errorMessage);
@@ -162,7 +167,7 @@ export default function PaymentScreen() {
           {/* Info */}
           <View className="bg-surface rounded-lg p-4 border border-border">
             <Text className="text-muted text-sm leading-relaxed">
-              💡 카카오페이를 통해 안전하게 결제할 수 있습니다.
+              💡 결제 신청 후 관리자의 승인을 기다립니다. 승인 완료 시 캐시가 차감됩니다.
             </Text>
           </View>
         </View>
