@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { checkBirthday, claimBirthdayReward } from "@/lib/birthday-service";
+import { setupAutoSync } from "@/lib/server-sync-service";
 
 interface UserData {
   userId: string;
@@ -29,6 +30,9 @@ export default function HomeScreen() {
 
   useEffect(() => {
     loadUserData();
+    // 5분마다 자동 동기화
+    const unsubscribe = setupAutoSync(5);
+    return unsubscribe;
   }, []);
 
   const loadUserData = async () => {

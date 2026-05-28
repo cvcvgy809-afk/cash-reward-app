@@ -1,6 +1,7 @@
 import { ScrollView, Text, View, TouchableOpacity, Alert, FlatList } from "react-native";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { sendPaymentApprovedNotification, sendPaymentRejectedNotification } from "@/lib/notification-service";
 
 import { ScreenContainer } from "@/components/screen-container";
 
@@ -70,6 +71,12 @@ export default function AdminPaymentsScreen() {
       }
 
       setPayments(updatedPayments);
+      
+      // 푸시 알림 전송
+      if (payment) {
+        await sendPaymentApprovedNotification(paymentId, payment.amount, payment.type);
+      }
+      
       Alert.alert("성공", "결제가 승인되었습니다");
     } catch (error: any) {
       Alert.alert("오류", error.message || "결제 승인에 실패했습니다");
@@ -89,6 +96,13 @@ export default function AdminPaymentsScreen() {
 
             await AsyncStorage.setItem("pendingPayments", JSON.stringify(updatedPayments));
             setPayments(updatedPayments);
+            
+            // 푸시 알림 전송
+            const payment = payments.find((p) => p.id === paymentId);
+            if (payment) {
+              await sendPaymentRejectedNotification(paymentId, payment.amount, payment.type);
+            }
+            
             Alert.alert("완료", "결제가 거절되었습니다");
           } catch (error: any) {
             Alert.alert("오류", error.message || "결제 거절에 실패했습니다");
