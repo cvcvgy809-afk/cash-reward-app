@@ -1,6 +1,7 @@
 import { ScrollView, Text, View, TouchableOpacity, Alert } from "react-native";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { checkBirthday, claimBirthdayReward } from "@/lib/birthday-service";
@@ -21,6 +22,7 @@ interface UserData {
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isBirthday, setIsBirthday] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -140,10 +142,10 @@ export default function HomeScreen() {
 
           {/* Action Buttons */}
           <View className="gap-3">
-            <TouchableOpacity className="bg-primary rounded-lg py-4 items-center active:opacity-80">
+            <TouchableOpacity onPress={() => router.push('/payment')} className="bg-primary rounded-lg py-4 items-center active:opacity-80">
               <Text className="text-foreground font-semibold text-lg">출금하기</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="bg-surface border border-primary rounded-lg py-4 items-center active:opacity-80">
+            <TouchableOpacity onPress={() => router.push('/payment')} className="bg-surface border border-primary rounded-lg py-4 items-center active:opacity-80">
               <Text className="text-primary font-semibold text-lg">기프트 구매</Text>
             </TouchableOpacity>
           </View>

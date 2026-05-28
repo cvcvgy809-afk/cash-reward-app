@@ -7,7 +7,6 @@ import {
   requestWithdrawal,
   purchaseGiftCard,
   purchaseGiftCon,
-  getWithdrawals,
 } from "@/lib/payment-service";
 
 interface UserData {
